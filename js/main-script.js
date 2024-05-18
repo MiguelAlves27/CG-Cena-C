@@ -9,11 +9,12 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let ringHight = 10;
-let centralHight = 100;
+let centralHight = 40;
 let firstRingRadius = 50;
 let secondRingRadius = 35;
 let thirdRingRadius = 20;
-let fourdRingRadius = 5;
+let fourdRingRadius = 2;
+let rings = [];
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -21,7 +22,6 @@ function createScene(){
     'use strict';
     scene = new THREE.Scene();
     scene.background = new THREE.Color("#bdeaf2");
-
 }
 
 //////////////////////
@@ -32,7 +32,7 @@ function createCameras() {
 
     // Câmera Perspectiva Fixa 
     cameraPerspetivaFixa = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    cameraPerspetivaFixa.position.set(100, 100, 0);
+    cameraPerspetivaFixa.position.set(100, 50, 0);
     cameraPerspetivaFixa.lookAt(scene.position);
 
     // Define a câmera ativa inicialmente como a câmera padrão
@@ -43,8 +43,8 @@ function createCameras() {
 /////////////////////
 function createHelpers() {
     'use strict';
-    const gridHelper = new THREE.GridHelper(200, 50)
-    scene.add(gridHelper)
+    const gridHelper = new THREE.GridHelper(200, 50);
+    scene.add(gridHelper);
 }
 /////////////////////
 /* CREATE LIGHT(S) */
@@ -52,51 +52,88 @@ function createHelpers() {
 function createLights() {
     'use strict';
     const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.6);
-    directionalLight.position.set(10, 10, 10)
+    directionalLight.position.set(10, 10, 10);
     scene.add(directionalLight);
     const directionalLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.6);
-    directionalLight2.position.set(-10, 10, -10)
+    directionalLight2.position.set(-10, 10, -10);
     scene.add(directionalLight2);
 }
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-function createFirstRing(){
+function createRings(){
     'use strict';
-    const geometry = new THREE.CylinderGeometry(firstRingRadius, firstRingRadius, ringHight,1000);
-    const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
-    const object = new THREE.Mesh(geometry, material);
-    object.translateY(ringHight/2);
-    scene.add(object);
+
+    // Definir altura dos anéis
+    const ringHeights = [4, 4, 4]; // Altura de cada anel
+    
+    // Criar os anéis com altura
+    const ringGeometries = ringHeights.map((height, i) => {
+        const innerRadius = 2 + i * 5; // Raio interno dos anéis (aumenta com o índice)
+        const outerRadius = innerRadius + 5 ; // Raio externo dos anéis
+        const segments = 32; // Número de segmentos
+    
+        const shape = new THREE.Shape();
+        shape.moveTo(outerRadius, 0);
+        shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+        shape.holes.push(new THREE.Path().absarc(0, 0, innerRadius, 0, Math.PI * 2, true));
+    
+        const extrudeSettings = {
+            steps: 1,
+            depth: height,
+            bevelEnabled: false
+        };
+    
+        return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    });
+    
+    // Definir materiais dos anéis
+    const ringMaterial = [
+        new THREE.MeshBasicMaterial({ color: "#7a7676", side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: "#b36262", side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: "#548a8a", side: THREE.DoubleSide })];
+    
+    // Criar e adicionar os anéis à cena
+    const ring = ringGeometries.map((geometry, i) => {
+        const ring = new THREE.Mesh(geometry, ringMaterial[i]);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = (3-i)*ringHeights[i];
+        scene.add(ring);
+        rings.push(ring);
+        return ring;
+    });
+    
 }
 
-function createSecondRing(){
-    'use strict';
-    const geometry = new THREE.CylinderGeometry(secondRingRadius, secondRingRadius, ringHight,1000);
-    const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
-    const object = new THREE.Mesh(geometry, material);
-    object.translateY(ringHight/2 + ringHight);
-    scene.add(object);
-}
-
-
-function createThirdtRing(){
-    'use strict';
-    const geometry = new THREE.CylinderGeometry(thirdRingRadius, thirdRingRadius, ringHight,1000);
-    const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
-    const object = new THREE.Mesh(geometry, material);
-    object.translateY(ringHight/2 + 2 * ringHight);
-    scene.add(object);
-}
-
-function createFourdRing(){
+function createCentralRing(){
     'use strict';
     const geometry = new THREE.CylinderGeometry(fourdRingRadius, fourdRingRadius, centralHight,1000);
     const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
     const object = new THREE.Mesh(geometry, material);
-    object.translateY(ringHight/2 + 3 * ringHight);
+    object.translateY(centralHight/2);
     scene.add(object);
 }
+
+////////////////////////
+/* CREATE SKYDOME */
+////////////////////////
+function createSkydome() {
+    'use strict';
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('sky.png', function(texture) {
+        const geometry = new THREE.SphereGeometry(500, 60, 40);
+        const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            side: THREE.BackSide
+        });
+        const skydome = new THREE.Mesh(geometry, material);
+        skydome.scale.set(-1, 1, 1); // Inverte a esfera
+        skydome.rotation.order = 'XZY'; // Ajusta a ordem de rotação para aplicar corretamente
+        skydome.rotation.y = Math.PI / 2; // Rotaciona a skydome para alinhar corretamente a textura
+        scene.add(skydome);
+    });
+}
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
@@ -137,18 +174,17 @@ function init() {
 
     // Initialize renderer
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
     createScene();
     createHelpers();
     createLights();
     createCameras();
 
-    createFirstRing();
-    createSecondRing();
-    createThirdtRing();
-    createFourdRing();
+    createRings();
+    createCentralRing();
+    createSkydome(); // Adiciona a skydome
 
 }
 
@@ -158,7 +194,7 @@ function init() {
 function animate() {
     'use strict';
     render();
-
+    requestAnimationFrame(animate); // Corrige o ciclo de animação
 }
 
 ////////////////////////////
@@ -166,7 +202,9 @@ function animate() {
 ////////////////////////////
 function onResize() { 
     'use strict';
-
+    cameraPerspetivaFixa.aspect = window.innerWidth / window.innerHeight;
+    cameraPerspetivaFixa.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 ///////////////////////
@@ -186,3 +224,4 @@ function onKeyUp(e){
 
 init();
 animate();
+window.addEventListener('resize', onResize, false); // Adiciona evento de redimensionamento
