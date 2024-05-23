@@ -9,13 +9,13 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let ringHeight = 5;
-let ringWidth = 6;
-let ringSegments = 24;
+let ringSegments = 100;
 let firstRingRadius = 50;
 let secondRingRadius = 35;
 let thirdRingRadius = 20;
-let centralHeight = 50;
-let fourthRingRadius = 5;
+let centralHeight = 60;
+let ringWidth = (firstRingRadius - secondRingRadius )/2;
+let fourthRingRadius = thirdRingRadius - ringHeight;
 let rings = [];
 let ring1height = 0;
 let ring2height = 0;
