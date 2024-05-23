@@ -3,20 +3,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-
+import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
+let materials = [];
+let rings = [];
+let shapes = [];
 let ringHeight = 5;
-let ringWidth = 6;
+let ringWidth = 10;
 let ringSegments = 24;
-let firstRingRadius = 50;
+let firstRingRadius = 55;
 let secondRingRadius = 35;
-let thirdRingRadius = 20;
+let thirdRingRadius = 15;
 let centralHeight = 50;
 let fourthRingRadius = 5;
-let rings = [];
 let ring1height = 0;
 let ring2height = 0;
 let ring3height = 0;
@@ -24,6 +26,7 @@ let mobiusRadius = 10;
 let mobiusWidth = 50;
 let mobiusSegments = 100;
 let mobiusStrip;
+let rotationSpeed = 0.5;
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -76,6 +79,41 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
+function whitney(u, v, target) {
+    u = u * 4 - 2;
+    v = v * 4 - 2;
+    const x = u * v;
+    const y = u;
+    const z = v * v;
+    target.set(x, y, z);
+}
+
+function getObjectHeight(object) {
+    const box = new THREE.Box3().setFromObject(object);
+    return box.max.y - box.min.y;
+}
+
+function createParametricShapes() {
+    let maxSize = 2;
+    let minSize = 1;
+    let radius = [firstRingRadius, secondRingRadius, thirdRingRadius]
+    let geometry = new ParametricGeometry(whitney, 25, 25);
+    let material = new THREE.MeshStandardMaterial({ color: 0xffa500, wireframe: false, side:THREE.DoubleSide });
+    let whitneyUmbrella = new THREE.Mesh(geometry, material);
+    whitneyUmbrella.scale.set(Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize)
+    whitneyUmbrella.position.set(firstRingRadius*Math.sin(Math.PI), ringHeight + getObjectHeight(whitneyUmbrella)/2 , firstRingRadius*Math.cos(Math.PI) )
+    shapes.push(whitneyUmbrella)
+    scene.add(whitneyUmbrella)
+
+    let whitneyUmbrella2 = new THREE.Mesh(geometry, material);
+    whitneyUmbrella2.scale.set(Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize)
+    whitneyUmbrella2.position.set(secondRingRadius*Math.sin(Math.PI), ringHeight + getObjectHeight(whitneyUmbrella)/2 , secondRingRadius*Math.cos(Math.PI) )
+    shapes.push(whitneyUmbrella2)
+    scene.add(whitneyUmbrella2)
+    
+}
+
+
 // Function to create a Möbius strip geometry
 function createMoebiusStrip() {
     const mobiusRadius = 25; // Define your radius
@@ -115,7 +153,7 @@ function createMoebiusStrip() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(mobiusGeometry.vertices, 3));
     geometry.setIndex(mobiusGeometry.indices);
 
-    const material = new THREE.MeshStandardMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide });
+    const material = new THREE.MeshBasicMaterial({ color: 0x32e4aa, wireframe: false, side: THREE.DoubleSide });
     const mobiusStrip = new THREE.Mesh(geometry, material);
     mobiusStrip.position.set(0, 60, 0);
     mobiusStrip.rotation.x += Math.PI / 2;
@@ -329,6 +367,7 @@ function init() {
     createCentralRing();
     createSkydome(); // Adiciona a skydome
     createMoebiusStrip();
+    createParametricShapes();
 }
 
 /////////////////////
@@ -336,6 +375,15 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+    for(let i = 0; i < shapes.length; i++){
+        if(i%2==0){
+            shapes[i].rotateY(0.01)
+        }
+        else{
+            shapes[i].rotateY(-0.01)
+        }
+    }
+
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
 }
