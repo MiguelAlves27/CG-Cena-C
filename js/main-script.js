@@ -8,6 +8,7 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 /* GLOBAL VARIABLES */
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
+let directionalLight, ambientLight
 let materials = [];
 let rings = [];
 let shapes = [];
@@ -73,12 +74,15 @@ function createHelpers() {
 /////////////////////
 function createLights() {
     'use strict';
-    const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.6);
-    directionalLight.position.set(10, 10, 10);
+
+    // Directional light setup
+    directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 0).normalize();
     scene.add(directionalLight);
-    const directionalLight2 = new THREE.DirectionalLight(0xFFFFFF, 0.6);
-    directionalLight2.position.set(-10, 10, -10);
-    scene.add(directionalLight2);
+
+    // Ambient light setup
+    ambientLight = new THREE.AmbientLight(0xffa500, 0.2); // Low intensity orange light
+    scene.add(ambientLight);
 }
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -479,6 +483,11 @@ function handleMovement() {
                 ring3Down = false;
             }
         }
+    }
+    if (keysPressed['d']){
+        setTimeout(() => {
+            directionalLight.visible = !directionalLight.visible;
+        }, 100); // Tempo de atraso em milissegundos (100ms)
     }
 }
 
