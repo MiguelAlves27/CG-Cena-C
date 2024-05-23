@@ -84,39 +84,129 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function whitney(u, v, target) {
-    u = u * 4 - 2;
-    v = v * 4 - 2;
-    const x = u * v;
-    const y = u;
-    const z = v * v;
-    target.set(x, y, z);
-}
-
 function getObjectHeight(object) {
     const box = new THREE.Box3().setFromObject(object);
     return box.max.y - box.min.y;
 }
 
 function createParametricShapes() {
-    let maxSize = 2;
-    let minSize = 1;
-    let radius = [firstRingRadius, secondRingRadius, thirdRingRadius]
-    let geometry = new ParametricGeometry(whitney, 25, 25);
-    let material = new THREE.MeshStandardMaterial({ color: 0xffa500, wireframe: false, side:THREE.DoubleSide });
-    let whitneyUmbrella = new THREE.Mesh(geometry, material);
-    whitneyUmbrella.scale.set(Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize)
-    whitneyUmbrella.position.set(firstRingRadius*Math.sin(Math.PI), ringHeight + getObjectHeight(whitneyUmbrella)/2 , firstRingRadius*Math.cos(Math.PI) )
-    shapes.push(whitneyUmbrella)
-    scene.add(whitneyUmbrella)
+    let maxSize = 4;
+    let minSize = 3;
+    let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
 
-    let whitneyUmbrella2 = new THREE.Mesh(geometry, material);
-    whitneyUmbrella2.scale.set(Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize, Math.random()*(maxSize - minSize) + minSize)
-    whitneyUmbrella2.position.set(secondRingRadius*Math.sin(Math.PI), ringHeight + getObjectHeight(whitneyUmbrella)/2 , secondRingRadius*Math.cos(Math.PI) )
-    shapes.push(whitneyUmbrella2)
-    scene.add(whitneyUmbrella2)
-    
+    // Funções para diferentes superfícies paramétricas
+    let parametricFunctions = [
+        whitney,
+        parametricFunction1,
+        parametricFunction2,
+        parametricFunction3,
+        parametricFunction4,
+        parametricFunction5,
+        parametricFunction6,
+        parametricFunction7
+    ];
+
+    // Material comum para todas as superfícies
+    let material = new THREE.MeshStandardMaterial({ color: 0xffa500, wireframe: false, side: THREE.DoubleSide });
+
+    // Loop para cada anel
+    for (let i = 0; i < radius.length; i++) {
+        // Loop para cada superfície paramétrica
+        for (let j = 0; j < parametricFunctions.length; j++) {
+            let geometry = new ParametricGeometry(parametricFunctions[j], 25, 25);
+            let parametricShape = new THREE.Mesh(geometry, material);
+
+            // Dimensionar a superfície aleatoriamente
+            let scale = Math.random() * (maxSize - minSize) + minSize;
+            parametricShape.scale.set(scale, scale, scale);
+
+            // Distribuir radialmente a cada 45 graus
+            let angle = j * (Math.PI / 4);
+            parametricShape.position.set(radius[i] * Math.sin(angle), getObjectHeight(parametricShape) / 2, radius[i] * Math.cos(angle));
+            
+            // Adicionar a superfície à lista de formas e ao anel correspondente
+            shapes.push(parametricShape);
+            rings[i].add(parametricShape);
+
+            // Definir uma rotação constante
+            let axis = new THREE.Vector3(0, 0.5, 0).normalize();
+            let speed = Math.random() * 0.02 + 0.01; // Velocidade de rotação aleatória
+
+            // Função de animação para a rotação
+            function animate() {
+                parametricShape.rotateOnAxis(axis, speed);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    }
 }
+
+// Função paramétrica 1: Whitney Umbrella
+function whitney(u, v, target) {
+    let x = u;
+    let y = u * v;
+    let z = v;
+    target.set(x, y, z);
+}
+
+// Função paramétrica 2: Superfície de Hélice
+function parametricFunction1(u, v, target) {
+    let x = Math.sin(u) * Math.cos(v);
+    let y = Math.sin(u) * Math.sin(v);
+    let z = Math.cos(u) + v;
+    target.set(x, y, z);
+}
+
+// Função paramétrica 3: Cilindro Hiperbólico
+function parametricFunction2(u, v, target) {
+    let x = Math.sinh(u);
+    let y = v;
+    let z = Math.cosh(u);
+    target.set(x, y, z);
+}
+
+// Função paramétrica 4: Ondas Senoidais
+function parametricFunction3(u, v, target) {
+    let x = u;
+    let y = Math.sin(u) * Math.cos(v);
+    let z = Math.sin(u) * Math.sin(v);
+    target.set(x, y, z);
+}
+
+// Função paramétrica 5: Paraboloide Hiperbólico
+function parametricFunction4(u, v, target) {
+    let x = u;
+    let y = v;
+    let z = u * u - v * v;
+    target.set(x, y, z);
+}
+
+// Função paramétrica 6: Enneper's Surface
+function parametricFunction5(u, v, target) {
+    let x = u - (u * u * u) / 3 + u * v * v;
+    let y = v - (v * v * v) / 3 + v * u * u;
+    let z = u * u - v * v;
+    target.set(x, y, z);
+}
+
+// Função paramétrica 7: Mobius Strip
+function parametricFunction6(u, v, target) {
+    u = u - 0.5; // Ajuste para centralizar a faixa
+    let x = Math.cos(2 * Math.PI * u) * (1 + v * Math.cos(2 * Math.PI * u / 2));
+    let y = Math.sin(2 * Math.PI * u) * (1 + v * Math.cos(2 * Math.PI * u / 2));
+    let z = v * Math.sin(2 * Math.PI * u / 2);
+    target.set(x, y, z);
+}
+
+// Função paramétrica 8: Hiperboloide de uma folha
+function parametricFunction7(u, v, target) {
+    let x = Math.cosh(u) * Math.cos(v);
+    let y = Math.cosh(u) * Math.sin(v);
+    let z = Math.sinh(u);
+    target.set(x, y, z);
+}
+
 
 
 // Function to create a Möbius strip geometry
@@ -453,7 +543,9 @@ function animate() {
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
     handleMovement();
-    rings[3].rotateY(ringSpeed/10);
+    if(rings[3]){
+        rings[3].rotateY(ringSpeed/10);
+    }
 }
 
 ////////////////////////////

@@ -6,7 +6,7 @@ Trabalho C
 Cena Interactiva com Malhas, Materiais, Luzes, Texturas e Câmara Estereoscópica
 
 # Lista de Tarefas
-- [ ] 1. [0,50 valores] Criar a base de um carrossel como está ilustrada na Figura 1 (C) que é composta
+- [x] 1. [0,50 valores] Criar a base de um carrossel como está ilustrada na Figura 1 (C) que é composta
 por um cilindro central e 3 anéis concêntricos. Enquanto o cilindro central permanece na mesma
 posição mas roda sobre o seu eixo longitudional, os 3 anéis podem se elevar e descer, de forma
 independente, mas relativamente ao cilindro central, recorrendo às teclas ‘1’, ‘2’ e ‘3’. O cálculo
@@ -14,10 +14,10 @@ do movimento deve ter em consideração que o utilizador pode carregar em vária
 simultâneo. Devem recorrer às geometrias THREE.RingGeometry, THREE.TubeGeometry ou
 THREE.ExtrudeGeometry.
 Nota: Não devem ser notórias quaisquer hiatos ou lacunas entre as quatro peças.
-- [ ] 2. [0,25 valores] Criar uma skydome por forma a envolver o carrossel. Aplicar como textura um still
+- [x] 2. [0,25 valores] Criar uma skydome por forma a envolver o carrossel. Aplicar como textura um still
 frame do vídeo elaborado pelo pioneiro Oskar Fischinger An Optical Poem (1938). Esta textura
 deve ser aplicada sobre a malha de uma calote esférica.
-- [ ] 3. [1,0 valores] Assentar em cada anel 8 superfícies paramétricas que devem estar distribuídas
+- [x] 3. [1,0 valores] Assentar em cada anel 8 superfícies paramétricas que devem estar distribuídas
 radialmente de forma regular (i.e., de 45º em 45º). O carrossel deve conter ao todo 8x3=24
 peças. Para tal, recorrer ao THREE.ParametricGeometry. A escolha de superfícies paramétricas é
 livre, mas devem consistir em 8 formas diferentes, incluindo superfícies regradas (e.g.,
