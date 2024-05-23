@@ -251,11 +251,21 @@ function createRings(){
 
 function createCentralRing(){
     'use strict';
-    const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
-    const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
-    const object = new THREE.Mesh(geometry, material);
-    object.translateY(centralHeight/2);
-    scene.add(object);
+    const loader = new THREE.TextureLoader();
+    loader.load('striped_texture.png', function(texture) {
+        // Criar o material com a textura carregada
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        
+        // Criar a geometria do cilindro
+        const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
+        
+        // Criar o mesh do cilindro e adicionar à cena
+        const cylinder = new THREE.Mesh(geometry, material);
+        cylinder.translateY(centralHeight/2);
+        scene.add(cylinder);
+        rings.push(cylinder);   
+    });
+     
 }
 
 ////////////////////////
@@ -392,6 +402,7 @@ function animate() {
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
     handleMovement();
+    rings[3].rotateY(ringSpeed/10);
 }
 
 ////////////////////////////
@@ -410,7 +421,6 @@ function onResize() {
 function onKeyDown(e) {
     'use strict';
     keysPressed[e.key.toLowerCase()] = true;
-
     const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
     if (keyElement) {
         keyElement.classList.add('active');
@@ -432,4 +442,3 @@ function onKeyUp(e) {
 
 init();
 animate();
-window.addEventListener('resize', onResize, false); // Adiciona evento de redimensionamento
