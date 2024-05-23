@@ -13,7 +13,7 @@ let rings = [];
 let shapes = [];
 let ringHeight = 5;
 let ringWidth = 10;
-let ringSegments = 24;
+let ringSegments = 100;
 let firstRingRadius = 55;
 let secondRingRadius = 35;
 let thirdRingRadius = 15;
@@ -22,6 +22,11 @@ let fourthRingRadius = 5;
 let ring1height = 0;
 let ring2height = 0;
 let ring3height = 0;
+var keysPressed = {};
+let ringSpeed = 0.2
+let ring1Down = false;
+let ring2Down = false;
+let ring3Down = false;
 let mobiusRadius = 10;
 let mobiusWidth = 50;
 let mobiusSegments = 100;
@@ -287,11 +292,21 @@ function createRings(){
 
 function createCentralRing(){
     'use strict';
-    const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
-    const material = new THREE.MeshStandardMaterial({color: 0x8bc0d4});
-    const object = new THREE.Mesh(geometry, material);
-    object.translateY(centralHeight/2);
-    scene.add(object);
+    const loader = new THREE.TextureLoader();
+    loader.load('striped_texture.png', function(texture) {
+        // Criar o material com a textura carregada
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        
+        // Criar a geometria do cilindro
+        const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
+        
+        // Criar o mesh do cilindro e adicionar à cena
+        const cylinder = new THREE.Mesh(geometry, material);
+        cylinder.translateY(centralHeight/2);
+        scene.add(cylinder);
+        rings.push(cylinder);   
+    });
+     
 }
 
 ////////////////////////
@@ -328,6 +343,53 @@ function checkCollisions(){
 function handleCollisions(){
     'use strict';
 
+}
+
+///////////////////////
+/*  HANDLE MOVEMENT  */
+///////////////////////
+function handleMovement() {
+    'use strict';
+
+    if (keysPressed['1']) {
+        let position = rings[0].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring1Down){
+            rings[0].translateY(ringSpeed);
+        }
+        else{
+            ring1Down = true;
+            rings[0].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring1Down = false;
+            }
+        }
+    }
+    if (keysPressed['2']) {
+        let position = rings[1].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring2Down){
+            rings[1].translateY(ringSpeed);
+        }
+        else{
+            ring2Down = true;
+            rings[1].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring2Down = false;
+            }
+        }
+    }
+    if (keysPressed['3']) {
+        let position = rings[2].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring3Down){
+            rings[2].translateY(ringSpeed);
+        }
+        else{
+            ring3Down = true;
+            rings[2].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring3Down = false;
+            }
+        }
+    }
 }
 
 ////////////
@@ -367,7 +429,14 @@ function init() {
     createCentralRing();
     createSkydome(); // Adiciona a skydome
     createMoebiusStrip();
+<<<<<<< HEAD
     createParametricShapes();
+=======
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+>>>>>>> 328d3b06608433db13728024b0b0a69d5b13c5aa
 }
 
 /////////////////////
@@ -386,6 +455,8 @@ function animate() {
 
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
+    handleMovement();
+    rings[3].rotateY(ringSpeed/10);
 }
 
 ////////////////////////////
@@ -403,16 +474,25 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-
+    keysPressed[e.key.toLowerCase()] = true;
+    const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
+    if (keyElement) {
+        keyElement.classList.add('active');
+    }
 }
 
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
-function onKeyUp(e){
+function onKeyUp(e) {
     'use strict';
+    keysPressed[e.key.toLowerCase()] = false;
+
+    const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
+    if (keyElement) {
+        keyElement.classList.remove('active');
+    }
 }
 
 init();
 animate();
-window.addEventListener('resize', onResize, false); // Adiciona evento de redimensionamento
