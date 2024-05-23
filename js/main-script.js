@@ -429,14 +429,11 @@ function init() {
     createCentralRing();
     createSkydome(); // Adiciona a skydome
     createMoebiusStrip();
-<<<<<<< HEAD
     createParametricShapes();
-=======
 
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
->>>>>>> 328d3b06608433db13728024b0b0a69d5b13c5aa
 }
 
 /////////////////////
