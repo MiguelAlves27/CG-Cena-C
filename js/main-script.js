@@ -17,9 +17,11 @@ let centralHeight = 60;
 let ringWidth = (firstRingRadius - secondRingRadius )/2;
 let fourthRingRadius = thirdRingRadius - ringHeight;
 let rings = [];
-let ring1height = 0;
-let ring2height = 0;
-let ring3height = 0;
+var keysPressed = {};
+let ringSpeed = 0.2
+let ring1Down = false;
+let ring2Down = false;
+let ring3Down = false;
 let mobiusRadius = 10;
 let mobiusWidth = 50;
 let mobiusSegments = 100;
@@ -292,6 +294,53 @@ function handleCollisions(){
 
 }
 
+///////////////////////
+/*  HANDLE MOVEMENT  */
+///////////////////////
+function handleMovement() {
+    'use strict';
+
+    if (keysPressed['1']) {
+        let position = rings[0].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring1Down){
+            rings[0].translateY(ringSpeed);
+        }
+        else{
+            ring1Down = true;
+            rings[0].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring1Down = false;
+            }
+        }
+    }
+    if (keysPressed['2']) {
+        let position = rings[1].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring2Down){
+            rings[1].translateY(ringSpeed);
+        }
+        else{
+            ring2Down = true;
+            rings[1].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring2Down = false;
+            }
+        }
+    }
+    if (keysPressed['3']) {
+        let position = rings[2].getWorldPosition(new THREE.Vector3());
+        if(position.y < centralHeight && !ring3Down){
+            rings[2].translateY(ringSpeed);
+        }
+        else{
+            ring3Down = true;
+            rings[2].translateY(-ringSpeed);
+            if(position.y <= ringHeight){
+                ring3Down = false;
+            }
+        }
+    }
+}
+
 ////////////
 /* UPDATE */
 ////////////
@@ -329,6 +378,10 @@ function init() {
     createCentralRing();
     createSkydome(); // Adiciona a skydome
     createMoebiusStrip();
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 }
 
 /////////////////////
@@ -338,6 +391,7 @@ function animate() {
     'use strict';
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
+    handleMovement();
 }
 
 ////////////////////////////
@@ -355,14 +409,25 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
+    keysPressed[e.key.toLowerCase()] = true;
 
+    const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
+    if (keyElement) {
+        keyElement.classList.add('active');
+    }
 }
 
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
-function onKeyUp(e){
+function onKeyUp(e) {
     'use strict';
+    keysPressed[e.key.toLowerCase()] = false;
+
+    const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
+    if (keyElement) {
+        keyElement.classList.remove('active');
+    }
 }
 
 init();
