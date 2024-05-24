@@ -4,10 +4,11 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
+
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-let scene, cameraPerspetivaFixa, activeCamera, renderer, stereoCamera;
+let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
 let spotlights = [];
 let rings = [];
@@ -58,12 +59,8 @@ function createCameras() {
     cameraPerspetivaFixa.position.set(100, 50, 0);
     cameraPerspetivaFixa.lookAt(scene.position);
 
-    // Definir a câmera ativa inicialmente como a câmera padrão
+    // Define a câmera ativa inicialmente como a câmera padrão
     activeCamera = cameraPerspetivaFixa;
-
-    // Criar a câmera estereoscópica
-    stereoCamera = new THREE.StereoCamera();
-    stereoCamera.aspect = 0.5; // Dividir o aspecto entre os olhos
 }
 /////////////////////
 /* CREATE HELPERS */
@@ -108,7 +105,7 @@ function createParametricShapes() {
     let maxSize = 4;
     let minSize = 3;
     let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
-    let material = new THREE.MeshStandardMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
 
 
     // Funções para diferentes superfícies paramétricas
@@ -249,7 +246,7 @@ function createMoebiusStrip() {
     let phi = 0;
     let x, y, z;
 
-    let material = new THREE.MeshStandardMaterial({ color: 0x135adc, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0x135adc, side: THREE.DoubleSide});
 
     for (let i = 0; i <= mobiusSegments; i++) {
         phi = i * 2 * Math.PI / mobiusSegments;
@@ -289,7 +286,7 @@ function createMoebiusStrip() {
 function createRings(){
     'use strict';
 
-    let material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
 
     ring = new THREE.Object3D();
 
@@ -412,7 +409,7 @@ function createRings(){
 function createCentralRing(){
     'use strict';
     
-    let material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
 
     // Criar a geometria do cilindro
     const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
@@ -520,13 +517,13 @@ function handleMovement() {
                 scene.traverse((object) => {
                     if (object.isMesh && object !== skydome) {
                         if(shapes.includes(object)){
-                            object.material = new THREE.MeshStandardMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
+                            object.material = new THREE.MeshBasicMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
                         }
                         else if(object === mobiusStrip){
-                            object.material = new THREE.MeshStandardMaterial({ color: 0x135adc, side: THREE.DoubleSide});
+                            object.material = new THREE.MeshBasicMaterial({ color: 0x135adc, side: THREE.DoubleSide});
                         }
                         else{
-                            object.material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+                            object.material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
                         }
                     }
                 });            
@@ -661,12 +658,13 @@ function init() {
 function animate() {
     'use strict';
 
-    render();
-    renderer.setAnimationLoop(animate); // Atualizado para suportar VR
-    handleMovement();
-    if(rings[3]){
-        rings[3].rotateY(ringSpeed/10);
-    }
+    renderer.setAnimationLoop(() => {
+        render();
+        handleMovement();
+        if(rings[3]){
+            rings[3].rotateY(ringSpeed / 10);
+        }
+    }); // Atualizado para suportar VR
 }
 
 ////////////////////////////
