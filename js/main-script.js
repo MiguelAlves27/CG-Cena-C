@@ -9,6 +9,7 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
+let spotlights = [];
 let rings = [];
 let shapes = [];
 let mobiusStrip;
@@ -109,7 +110,7 @@ function createParametricShapes() {
     let parametricFunctions = [
         whitney,
         wave,
-        parametricFunction2,
+        parametricFunction1,
         parametricFunction3,
         parametricFunction4,
         parametricFunction5,
@@ -164,6 +165,7 @@ function whitney(u, v, target) {
     target.set(x, y, z);
 }
 
+// Função paramétrica 2: wave (caixa de ovos)
 function wave(u, v, target) {
     const x = u * 2 - 1;
     const y = Math.sin(u * Math.PI * 4) * Math.sin(v * Math.PI * 4);
