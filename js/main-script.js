@@ -8,6 +8,8 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
+const resetRenderer = () => renderer.setSize(window.innerWidth, window.innerHeight);
+const setupRenderer = () => { resetRenderer(); document.body.appendChild(renderer.domElement); renderer.xr.enabled = true; }
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
 let spotlights = [];
@@ -635,7 +637,6 @@ function init() {
     renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
-
     createScene();
     createHelpers();
     createLights();
@@ -709,4 +710,5 @@ function onKeyUp(e) {
 }
 
 init();
+renderer?.setAnimationLoop(animate);
 animate();
