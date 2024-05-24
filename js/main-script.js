@@ -34,6 +34,7 @@ let mobiusStrip;
 let rotationSpeed = 0.5;
 let dPressed = false;
 let tPain = false;
+let tActive = false;
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -553,11 +554,15 @@ function handleMovement() {
     }
     if (keysPressed['t']){
         if (!tPain) {
+            console.log("TPAIN ATIVO");
+            tActive = !tActive;
+            console.log("mexi no active");
             tPain = true;
         }
     }
     if (keysPressed['q']){
-        if (tPain) {
+        if (tActive) {
+            console.log("Q  ATIVO");
             // FAZER O QUE A Q FAZ RICARDO TODO
         }
     }
@@ -653,6 +658,7 @@ function onKeyUp(e) {
         dPressed = false;
     }
     if (e.key.toLowerCase() === 't') {
+        console.log("T PAIN CANCELADO");
         tPain = false;
     }
     const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
