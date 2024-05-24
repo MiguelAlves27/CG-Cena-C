@@ -25,7 +25,7 @@ hiperbolóide de 1 folha). Colocar múltiplas instâncias destas 8 superfícies 
 anéis, tendo cada instância dimensões e orientações distintas. Cada superfície deve rodar
 segundo uma velocidade angular constante ao longo de um eixo de rotação que atravessa o
 centróide da forma, sendo a escolha do eixo e velocidade de rotação livre.
-- [ ] 4. [0,25 valores] Criar a iluminação global da cena recorrendo a uma fonte de luz direccional. A
+- [x] 4. [0,25 valores] Criar a iluminação global da cena recorrendo a uma fonte de luz direccional. A
 fonte de luz direccional deve incidir com um ângulo diferente de zero relativamente à normal do
 plano xOz do referencial global da cena. Esta fonte de luz deve poder ser ligada ou desligada
 através da tecla (‘D(d)’). Definir também uma luz ambiente com baixa intensidade com tom

@@ -82,7 +82,8 @@ function createLights() {
 
     // Directional light setup
     directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(1, 1, 0).normalize();
+    directionalLight.position.set(10, 10, 10).normalize();
+    directionalLight.lookAt(0, 0, 0)
     scene.add(directionalLight);
 
     // Ambient light setup
@@ -103,7 +104,7 @@ function createParametricShapes() {
     let maxSize = 4;
     let minSize = 3;
     let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
-    let material = new THREE.MeshStandardMaterial({color: 0xff0000, side: THREE.DoubleSide})
+    let material = new THREE.MeshStandardMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
 
 
     // Funções para diferentes superfícies paramétricas
@@ -244,7 +245,7 @@ function createMoebiusStrip() {
     let phi = 0;
     let x, y, z;
 
-    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    let material = new THREE.MeshStandardMaterial({ color: 0x135adc, side: THREE.DoubleSide});
 
     for (let i = 0; i <= mobiusSegments; i++) {
         phi = i * 2 * Math.PI / mobiusSegments;
@@ -284,7 +285,7 @@ function createMoebiusStrip() {
 function createRings(){
     'use strict';
 
-    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    let material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
 
     ring = new THREE.Object3D();
 
@@ -407,7 +408,7 @@ function createRings(){
 function createCentralRing(){
     'use strict';
     
-    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    let material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
 
     // Criar a geometria do cilindro
     const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
