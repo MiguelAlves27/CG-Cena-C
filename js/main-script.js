@@ -173,9 +173,9 @@ function whitney(u, v, target) {
 }
 
 function wave(u, v, target) {
-    const x = u * 3 - 2;
+    const x = u * 2 - 1;
     const y = Math.sin(u * Math.PI * 4) * Math.sin(v * Math.PI * 4);
-    const z = v * 3 - 2;
+    const z = v * 2 - 1;
     target.set(x, y, z);
 }
 
