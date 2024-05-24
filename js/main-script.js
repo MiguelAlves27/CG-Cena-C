@@ -32,6 +32,7 @@ let mobiusWidth = 50;
 let mobiusSegments = 100;
 let mobiusStrip;
 let rotationSpeed = 0.5;
+let dPressed = false;
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -544,9 +545,10 @@ function handleMovement() {
         }
     }
     if (keysPressed['d']){
-        setTimeout(() => {
+        if (!dPressed) {
             directionalLight.visible = !directionalLight.visible;
-        }, 100); // Tempo de atraso em milissegundos (100ms)
+            dPressed = true;
+        }
     }
 }
 
@@ -636,7 +638,9 @@ function onKeyDown(e) {
 function onKeyUp(e) {
     'use strict';
     keysPressed[e.key.toLowerCase()] = false;
-
+    if (e.key.toLowerCase() === 'd') {
+        dPressed = false;
+    }
     const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
     if (keyElement) {
         keyElement.classList.remove('active');
