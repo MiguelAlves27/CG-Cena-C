@@ -30,7 +30,7 @@ fonte de luz direccional deve incidir com um ângulo diferente de zero relativam
 plano xOz do referencial global da cena. Esta fonte de luz deve poder ser ligada ou desligada
 através da tecla (‘D(d)’). Definir também uma luz ambiente com baixa intensidade com tom
 alaranjado.
-- [ ] 5. [0,50 valores] Construir uma faixa de Möbius (Figura 1 (B)) recorrendo a malhas de polígonos.
+- [x] 5. [0,50 valores] Construir uma faixa de Möbius (Figura 1 (B)) recorrendo a malhas de polígonos.
 Por forma a facilitar a construção das malhas, sugere-se que definam apenas as faces visíveis de
 cada peça (portanto, não é necessário modelar as faces não visíveis!). Esta superfície deve ser
 colocada sobre o cilindro central como que a levitar sobre este.
@@ -41,7 +41,7 @@ cima de modo a iluminar a forma. As luzes pontuais e as luz spotlight devem ser 
 desactivadas através da tecla ‘P(p)’ e tecla ‘S(s)’, respectivamente.
 Nota: A iluminação com o holofote deve ser suficiente para se conseguir visualizar os
 objectos da cena, mas não necessita de os iluminar na íntegra.
-- [ ] 7. [0,50 valores] Definir quatro tipos de materiais (MeshLambertMaterial, MeshPhongMaterial,
+- [x] 7. [0,50 valores] Definir quatro tipos de materiais (MeshLambertMaterial, MeshPhongMaterial,
 MeshToonMaterial, MeshNormalMaterial) por cada objecto da cena. Deve ser ainda possível
 alternar o tipo de sombreamento entre Gouraud (diffuse), Phong, Cartoon e NormalMap usando 
 as teclas ‘Q(q)’, ‘W(w)’, ‘E(e)’ e ‘R(r)’, respectivamente. Deve ser ainda possível activar e

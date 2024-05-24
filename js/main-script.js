@@ -11,6 +11,9 @@ let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
 let rings = [];
 let shapes = [];
+let mobiusStrip;
+let skydome;
+let ring, ring2, ring3;
 let ringHeight = 5;
 let ringWidth = 10;
 let ringSegments = 100;
@@ -30,7 +33,6 @@ let ring3Down = false;
 let mobiusRadius = 10;
 let mobiusWidth = 50;
 let mobiusSegments = 100;
-let mobiusStrip;
 let rotationSpeed = 0.5;
 let dPressed = false;
 let tPain = false;
@@ -96,23 +98,11 @@ function getObjectHeight(object) {
     return box.max.y - box.min.y;
 }
 
-function createParametricShapes(matId) {
+function createParametricShapes() {
     let maxSize = 4;
     let minSize = 3;
     let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
-    let material;
-
-    if(matId == 0){
-        material = new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide});
-    }if(matId == 1){
-        material = new THREE.MeshPhongMaterial({color: 0x0000ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
-    }if(matId == 2){
-        material = new THREE.MeshToonMaterial({color: 0xff0000, side: THREE.DoubleSide})
-    }if(matId == 3){
-        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
-    }if(matId == 4){
-        material = new THREE.MeshStandardMaterial({color: 0xff0000, side: THREE.DoubleSide})
-    }
+    let material = new THREE.MeshStandardMaterial({color: 0xff0000, side: THREE.DoubleSide})
 
 
     // Funções para diferentes superfícies paramétricas
@@ -242,7 +232,7 @@ function parametricFunction7(u, v, target) {
 
 
 // Function to create a Möbius strip geometry
-function createMoebiusStrip(matId) {
+function createMoebiusStrip() {
     const mobiusRadius = 25; // Define your radius
     const mobiusWidth = 5; // Define your width
     const mobiusSegments = 100; // Define the number of segments
@@ -252,19 +242,7 @@ function createMoebiusStrip(matId) {
     let phi = 0;
     let x, y, z;
 
-    let material;
-
-    if(matId == 0){
-        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
-    }if(matId == 1){
-        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
-    }if(matId == 2){
-        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
-    }if(matId == 3){
-        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
-    }if(matId == 4){
-        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
-    }
+    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
 
     for (let i = 0; i <= mobiusSegments; i++) {
         phi = i * 2 * Math.PI / mobiusSegments;
@@ -294,31 +272,19 @@ function createMoebiusStrip(matId) {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(mobiusGeometry.vertices, 3));
     geometry.setIndex(mobiusGeometry.indices);
 
-    const mobiusStrip = new THREE.Mesh(geometry, material);
+    mobiusStrip = new THREE.Mesh(geometry, material);
     mobiusStrip.position.set(0, 60, 0);
     mobiusStrip.rotation.x += Math.PI / 2;
 
     scene.add(mobiusStrip);
 }
 
-function createRings(matId){
+function createRings(){
     'use strict';
 
-    let material;
+    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
 
-    if(matId == 0){
-        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
-    }if(matId == 1){
-        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
-    }if(matId == 2){
-        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
-    }if(matId == 3){
-        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
-    }if(matId == 4){
-        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
-    }
-
-    let ring = new THREE.Object3D();
+    ring = new THREE.Object3D();
 
     let outer = new THREE.Shape();
     for (let i = 0; i <= ringSegments; i++) {
@@ -360,7 +326,7 @@ function createRings(matId){
     ring.add(mesh);
     ring.translateY(ringHeight);
 
-    let ring2 = new THREE.Object3D();
+    ring2 = new THREE.Object3D();
 
     let outer2 = new THREE.Shape();
     for (let i = 0; i <= ringSegments; i++) {
@@ -396,7 +362,7 @@ function createRings(matId){
     ring2.add(mesh2);
     ring2.translateY(ringHeight + 2);
 
-    let ring3 = new THREE.Object3D();
+    ring3 = new THREE.Object3D();
 
     let outer3 = new THREE.Shape();
     for (let i = 0; i <= ringSegments; i++) {
@@ -436,22 +402,10 @@ function createRings(matId){
     scene.add(ring, ring2, ring3);
 }
 
-function createCentralRing(matId){
+function createCentralRing(){
     'use strict';
     
-    let material;
-
-    if(matId == 0){
-        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
-    }if(matId == 1){
-        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
-    }if(matId == 2){
-        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
-    }if(matId == 3){
-        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
-    }if(matId == 4){
-        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
-    }
+    let material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
 
     // Criar a geometria do cilindro
     const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
@@ -460,9 +414,7 @@ function createCentralRing(matId){
     const cylinder = new THREE.Mesh(geometry, material);
     cylinder.translateY(centralHeight/2);
     scene.add(cylinder);
-    rings.push(cylinder);   
-
-     
+    rings.push(cylinder);
 }
 
 ////////////////////////
@@ -477,7 +429,7 @@ function createSkydome() {
             map: texture,
             side: THREE.BackSide
         });
-        const skydome = new THREE.Mesh(geometry, material);
+        skydome = new THREE.Mesh(geometry, material);
         skydome.scale.set(-1, 1, 1); // Inverte a esfera
         skydome.rotation.order = 'XZY'; // Ajusta a ordem de rotação para aplicar corretamente
         skydome.rotation.y = Math.PI / 2; // Rotaciona a skydome para alinhar corretamente a textura
@@ -557,15 +509,98 @@ function handleMovement() {
             console.log("TPAIN ATIVO");
             tActive = !tActive;
             console.log("mexi no active");
+            if(!tActive){
+                scene.traverse((object) => {
+                    if (object.isMesh && object !== skydome) {
+                        if(shapes.includes(object)){
+                            object.material = new THREE.MeshStandardMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
+                        }
+                        else if(object === mobiusStrip){
+                            object.material = new THREE.MeshStandardMaterial({ color: 0x135adc, side: THREE.DoubleSide});
+                        }
+                        else{
+                            object.material = new THREE.MeshStandardMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+                        }
+                    }
+                });            
+            }
             tPain = true;
         }
     }
     if (keysPressed['q']){
         if (tActive) {
-            console.log("Q  ATIVO");
+            scene.traverse((object) => {
+                if (object.isMesh && object !== skydome) {
+                    if(shapes.includes(object)){
+                        object.material = new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide});
+                    }
+                    else if(object === mobiusStrip){
+                        object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+                    }
+                    else if(rings.includes(object)){
+                        object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+                    }
+                    else{
+                        object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+                    }
+                }
+            });
             // FAZER O QUE A Q FAZ RICARDO TODO
         }
     }
+    if (keysPressed['w']){
+        if (tActive) {
+            scene.traverse((object) => {
+                if (object.isMesh && object !== skydome) {
+                    if(shapes.includes(object)){
+                        object.material = new THREE.MeshPhongMaterial({color: 0x0000ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide});
+                    }
+                    else if(object === mobiusStrip){
+                        object.material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+                    }
+                    else if(rings.includes(object)){
+                        object.material = new THREE.MeshPhongMaterial({color: 0x121aed, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+                    }
+                    else{
+                        object.material = new THREE.MeshPhongMaterial({color: 0xd443ad, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+                    }
+                }
+            });
+            // FAZER O QUE A Q FAZ RICARDO TODO
+        }
+    }
+    if (keysPressed['e']){
+        if (tActive) {
+            scene.traverse((object) => {
+                if (object.isMesh && object !== skydome) {
+                    if(shapes.includes(object)){
+                        object.material = new THREE.MeshToonMaterial({color: 0xff0000, side: THREE.DoubleSide})
+                    }
+                    else if(object === mobiusStrip){
+                        object.material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
+                    }
+                    else if(rings.includes(object)){
+                        object.material = new THREE.MeshToonMaterial({color: 0x00fff0, side: THREE.DoubleSide});
+                    }
+                    else{
+                        object.material = new THREE.MeshToonMaterial({color: 0x0da432, side: THREE.DoubleSide});
+                    }
+                }
+            });
+            // FAZER O QUE A Q FAZ RICARDO TODO
+        }
+    }
+    if (keysPressed['r']){
+        if (tActive) {
+            scene.traverse((object) => {
+                if (object.isMesh && object !== skydome) {
+                    object.material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
+                }
+            });
+            // FAZER O QUE A Q FAZ RICARDO TODO
+        }
+    }
+
 }
 
 ////////////
@@ -601,12 +636,11 @@ function init() {
     createCameras();
     createControls();
 
-    createRings(4); // Adiciona os Anéis
-    createCentralRing(4); // Adiciona o Anel central (cilindro)
+    createRings(); // Adiciona os Anéis
+    createCentralRing(); // Adiciona o Anel central (cilindro)
     createSkydome(); // Adiciona a skydome
-    createMoebiusStrip(4); // Adiciona a Moebius Strip
-    createParametricShapes(4);  // Adiciona as formas paramétricas
-
+    createMoebiusStrip(); // Adiciona a Moebius Strip
+    createParametricShapes();  // Adiciona as formas paramétricas
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
