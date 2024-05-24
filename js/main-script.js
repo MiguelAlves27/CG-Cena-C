@@ -9,7 +9,6 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 //////////////////////
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
-let materials = [];
 let rings = [];
 let shapes = [];
 let ringHeight = 5;
@@ -84,6 +83,7 @@ function createLights() {
     ambientLight = new THREE.AmbientLight(0xffa500, 0.2); // Low intensity orange light
     scene.add(ambientLight);
 }
+
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
@@ -93,15 +93,29 @@ function getObjectHeight(object) {
     return box.max.y - box.min.y;
 }
 
-function createParametricShapes() {
+function createParametricShapes(matId) {
     let maxSize = 4;
     let minSize = 3;
     let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
+    let material;
+
+    if(matId == 0){
+        material = new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide});
+    }if(matId == 1){
+        material = new THREE.MeshPhongMaterial({color: 0x0000ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+    }if(matId == 2){
+        material = new THREE.MeshToonMaterial({color: 0xff0000, side: THREE.DoubleSide})
+    }if(matId == 3){
+        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
+    }if(matId == 4){
+        material = new THREE.MeshStandardMaterial({color: 0xff0000, side: THREE.DoubleSide})
+    }
+
 
     // Funções para diferentes superfícies paramétricas
     let parametricFunctions = [
         whitney,
-        parametricFunction1,
+        wave,
         parametricFunction2,
         parametricFunction3,
         parametricFunction4,
@@ -110,8 +124,6 @@ function createParametricShapes() {
         parametricFunction7
     ];
 
-    // Material comum para todas as superfícies
-    let material = new THREE.MeshStandardMaterial({ color: 0xffa500, wireframe: false, side: THREE.DoubleSide });
 
     // Loop para cada anel
     for (let i = 0; i < radius.length; i++) {
@@ -138,7 +150,12 @@ function createParametricShapes() {
 
             // Função de animação para a rotação
             function animate() {
-                parametricShape.rotateOnAxis(axis, speed);
+                if(j%2==0){
+                    parametricShape.rotateOnAxis(axis, speed);
+                }
+                else{
+                    parametricShape.rotateOnAxis(axis, -speed);
+                }
                 requestAnimationFrame(animate);
             }
             animate();
@@ -153,6 +170,14 @@ function whitney(u, v, target) {
     let z = v;
     target.set(x, y, z);
 }
+
+function wave(u, v, target) {
+    const x = u * 3 - 2;
+    const y = v * 3 - 2;
+    const z = Math.sin(u * Math.PI * 4) * Math.sin(v * Math.PI * 4);
+    target.set(x, y, z);
+}
+
 
 // Função paramétrica 2: Superfície de Hélice
 function parametricFunction1(u, v, target) {
@@ -214,7 +239,7 @@ function parametricFunction7(u, v, target) {
 
 
 // Function to create a Möbius strip geometry
-function createMoebiusStrip() {
+function createMoebiusStrip(matId) {
     const mobiusRadius = 25; // Define your radius
     const mobiusWidth = 5; // Define your width
     const mobiusSegments = 100; // Define the number of segments
@@ -223,6 +248,20 @@ function createMoebiusStrip() {
     let indices = [];
     let phi = 0;
     let x, y, z;
+
+    let material;
+
+    if(matId == 0){
+        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+    }if(matId == 1){
+        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+    }if(matId == 2){
+        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
+    }if(matId == 3){
+        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
+    }if(matId == 4){
+        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    }
 
     for (let i = 0; i <= mobiusSegments; i++) {
         phi = i * 2 * Math.PI / mobiusSegments;
@@ -252,7 +291,6 @@ function createMoebiusStrip() {
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(mobiusGeometry.vertices, 3));
     geometry.setIndex(mobiusGeometry.indices);
 
-    const material = new THREE.MeshBasicMaterial({ color: 0x32e4aa, wireframe: false, side: THREE.DoubleSide });
     const mobiusStrip = new THREE.Mesh(geometry, material);
     mobiusStrip.position.set(0, 60, 0);
     mobiusStrip.rotation.x += Math.PI / 2;
@@ -260,8 +298,22 @@ function createMoebiusStrip() {
     scene.add(mobiusStrip);
 }
 
-function createRings(){
+function createRings(matId){
     'use strict';
+
+    let material;
+
+    if(matId == 0){
+        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+    }if(matId == 1){
+        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+    }if(matId == 2){
+        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
+    }if(matId == 3){
+        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
+    }if(matId == 4){
+        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    }
 
     let ring = new THREE.Object3D();
 
@@ -298,7 +350,6 @@ function createRings(){
     };
 
     let geometry = new THREE.ExtrudeGeometry(outer, extrudeSettings);
-    let material = new THREE.MeshBasicMaterial({ color: "#548a8a", side: THREE.DoubleSide })
     let mesh = new THREE.Mesh(geometry, material);
 
     mesh.rotateX(Math.PI/2)
@@ -336,12 +387,11 @@ function createRings(){
     outer2.holes.push(inner2);
 
     let geometry2 = new THREE.ExtrudeGeometry(outer2, extrudeSettings);
-    let material2 = new THREE.MeshBasicMaterial({ color: "#54102a", side: THREE.DoubleSide })
-    let mesh2 = new THREE.Mesh(geometry2, material2);
+    let mesh2 = new THREE.Mesh(geometry2, material);
 
     mesh2.rotateX(Math.PI/2)
     ring2.add(mesh2);
-    ring2.translateY(ringHeight);
+    ring2.translateY(ringHeight + 2);
 
     let ring3 = new THREE.Object3D();
 
@@ -373,33 +423,42 @@ function createRings(){
     outer3.holes.push(inner3);
 
     let geometry3 = new THREE.ExtrudeGeometry(outer3, extrudeSettings);
-    let material3 = new THREE.MeshBasicMaterial({ color: "#aaa02a", side: THREE.DoubleSide })
-    let mesh3 = new THREE.Mesh(geometry3, material3);
+    let mesh3 = new THREE.Mesh(geometry3, material);
 
     mesh3.rotateX(Math.PI/2)
     ring3.add(mesh3);
-    ring3.translateY(ringHeight);
+    ring3.translateY(ringHeight + 4);
 
     rings = [ring, ring2, ring3]
     scene.add(ring, ring2, ring3);
 }
 
-function createCentralRing(){
+function createCentralRing(matId){
     'use strict';
-    const loader = new THREE.TextureLoader();
-    loader.load('striped_texture.png', function(texture) {
-        // Criar o material com a textura carregada
-        const material = new THREE.MeshBasicMaterial({ map: texture });
-        
-        // Criar a geometria do cilindro
-        const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
-        
-        // Criar o mesh do cilindro e adicionar à cena
-        const cylinder = new THREE.Mesh(geometry, material);
-        cylinder.translateY(centralHeight/2);
-        scene.add(cylinder);
-        rings.push(cylinder);   
-    });
+    
+    let material;
+
+    if(matId == 0){
+        material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+    }if(matId == 1){
+        material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+    }if(matId == 2){
+        material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
+    }if(matId == 3){
+        material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide})
+    }if(matId == 4){
+        material = new THREE.MeshStandardMaterial({color: 0xfdd930, side: THREE.DoubleSide})
+    }
+
+    // Criar a geometria do cilindro
+    const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
+    
+    // Criar o mesh do cilindro e adicionar à cena
+    const cylinder = new THREE.Mesh(geometry, material);
+    cylinder.translateY(centralHeight/2);
+    scene.add(cylinder);
+    rings.push(cylinder);   
+
      
 }
 
@@ -524,11 +583,11 @@ function init() {
     createCameras();
     createControls();
 
-    createRings();
-    createCentralRing();
+    createRings(0); // Adiciona os Anéis
+    createCentralRing(1); // Adiciona o Anel central (cilindro)
     createSkydome(); // Adiciona a skydome
-    createMoebiusStrip();
-    createParametricShapes();
+    createMoebiusStrip(2); // Adiciona a Moebius Strip
+    createParametricShapes(3);  // Adiciona as formas paramétricas
 
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
@@ -540,14 +599,6 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-    for(let i = 0; i < shapes.length; i++){
-        if(i%2==0){
-            shapes[i].rotateY(0.01)
-        }
-        else{
-            shapes[i].rotateY(-0.01)
-        }
-    }
 
     render();
     requestAnimationFrame(animate); // Corrige o ciclo de animação
