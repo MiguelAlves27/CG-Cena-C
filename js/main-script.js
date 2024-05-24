@@ -174,8 +174,8 @@ function whitney(u, v, target) {
 
 function wave(u, v, target) {
     const x = u * 3 - 2;
-    const y = v * 3 - 2;
-    const z = Math.sin(u * Math.PI * 4) * Math.sin(v * Math.PI * 4);
+    const y = Math.sin(u * Math.PI * 4) * Math.sin(v * Math.PI * 4);
+    const z = v * 3 - 2;
     target.set(x, y, z);
 }
 
@@ -585,11 +585,11 @@ function init() {
     createCameras();
     createControls();
 
-    createRings(0); // Adiciona os Anéis
-    createCentralRing(1); // Adiciona o Anel central (cilindro)
+    createRings(4); // Adiciona os Anéis
+    createCentralRing(4); // Adiciona o Anel central (cilindro)
     createSkydome(); // Adiciona a skydome
-    createMoebiusStrip(2); // Adiciona a Moebius Strip
-    createParametricShapes(3);  // Adiciona as formas paramétricas
+    createMoebiusStrip(4); // Adiciona a Moebius Strip
+    createParametricShapes(4);  // Adiciona as formas paramétricas
 
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
