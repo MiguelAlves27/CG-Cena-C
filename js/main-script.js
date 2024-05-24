@@ -7,7 +7,7 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-let scene, cameraPerspetivaFixa, activeCamera, renderer;
+let scene, cameraPerspetivaFixa, activeCamera, renderer, stereoCamera;
 let directionalLight, ambientLight
 let spotlights = [];
 let rings = [];
@@ -58,8 +58,12 @@ function createCameras() {
     cameraPerspetivaFixa.position.set(100, 50, 0);
     cameraPerspetivaFixa.lookAt(scene.position);
 
-    // Define a câmera ativa inicialmente como a câmera padrão
+    // Definir a câmera ativa inicialmente como a câmera padrão
     activeCamera = cameraPerspetivaFixa;
+
+    // Criar a câmera estereoscópica
+    stereoCamera = new THREE.StereoCamera();
+    stereoCamera.aspect = 0.5; // Dividir o aspecto entre os olhos
 }
 /////////////////////
 /* CREATE HELPERS */
@@ -629,9 +633,11 @@ function init() {
     'use strict';
 
     // Initialize renderer
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild(VRButton.createButton(renderer));
 
     createScene();
     createHelpers();
@@ -656,7 +662,7 @@ function animate() {
     'use strict';
 
     render();
-    requestAnimationFrame(animate); // Corrige o ciclo de animação
+    renderer.setAnimationLoop(animate); // Atualizado para suportar VR
     handleMovement();
     if(rings[3]){
         rings[3].rotateY(ringSpeed/10);
