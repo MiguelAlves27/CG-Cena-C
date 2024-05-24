@@ -33,6 +33,7 @@ let mobiusSegments = 100;
 let mobiusStrip;
 let rotationSpeed = 0.5;
 let dPressed = false;
+let tPain = false;
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -550,6 +551,16 @@ function handleMovement() {
             dPressed = true;
         }
     }
+    if (keysPressed['t']){
+        if (!tPain) {
+            tPain = true;
+        }
+    }
+    if (keysPressed['q']){
+        if (tPain) {
+            // FAZER O QUE A Q FAZ RICARDO TODO
+        }
+    }
 }
 
 ////////////
@@ -640,6 +651,9 @@ function onKeyUp(e) {
     keysPressed[e.key.toLowerCase()] = false;
     if (e.key.toLowerCase() === 'd') {
         dPressed = false;
+    }
+    if (e.key.toLowerCase() === 't') {
+        tPain = false;
     }
     const keyElement = document.querySelector(`#hud .key[data-key="${e.key.toUpperCase()}"]`);
     if (keyElement) {
