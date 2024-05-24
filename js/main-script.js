@@ -10,9 +10,10 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 //////////////////////
 const resetRenderer = () => renderer.setSize(window.innerWidth, window.innerHeight);
 const setupRenderer = () => { resetRenderer(); document.body.appendChild(renderer.domElement); renderer.xr.enabled = true; }
+let delta = new THREE.Clock()
 let scene, cameraPerspetivaFixa, activeCamera, renderer;
 let directionalLight, ambientLight
-let spotlights = [];
+let pointLights = [];
 let rings = [];
 let shapes = [];
 let mobiusStrip;
@@ -30,12 +31,12 @@ let ring1height = 0;
 let ring2height = 0;
 let ring3height = 0;
 var keysPressed = {};
-let ringSpeed = 0.2
+let ringSpeed = 1
 let ring1Down = false;
 let ring2Down = false;
 let ring3Down = false;
-let mobiusRadius = 10;
-let mobiusWidth = 50;
+let mobiusRadius = 25;
+let mobiusWidth = 5;
 let mobiusSegments = 100;
 let rotationSpeed = 0.5;
 let dPressed = false;
@@ -92,6 +93,15 @@ function createLights() {
     // Ambient light setup
     ambientLight = new THREE.AmbientLight(0xffa500, 0.2); // Low intensity orange light
     scene.add(ambientLight);
+
+    let pointLight;
+    for(let i = 0; i < 8; i++){
+        pointLight = new THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(mobiusRadius*Math.sin(2*i*Math.PI/8), 60, mobiusRadius*Math.cos(2*i*Math.PI/8))
+        pointLights.push(pointLight)
+        pointLight.castShadow = true
+        scene.add(pointLight)
+    }
 }
 
 ////////////////////////
@@ -108,7 +118,7 @@ function createParametricShapes() {
     let minSize = 3;
     let radius = [firstRingRadius, secondRingRadius, thirdRingRadius];
     let material = new THREE.MeshBasicMaterial({ color: 0xf32d30, side: THREE.DoubleSide});
-
+    let spotlight;
 
     // Funções para diferentes superfícies paramétricas
     let parametricFunctions = [
@@ -145,7 +155,6 @@ function createParametricShapes() {
             // Definir uma rotação constante
             let axis = new THREE.Vector3(0, 0.5, 0).normalize();
             let speed = Math.random() * 0.02 + 0.01; // Velocidade de rotação aleatória
-
             // Função de animação para a rotação
             function animate() {
                 if(j%2==0){
@@ -239,10 +248,6 @@ function parametricFunction7(u, v, target) {
 
 // Function to create a Möbius strip geometry
 function createMoebiusStrip() {
-    const mobiusRadius = 25; // Define your radius
-    const mobiusWidth = 5; // Define your width
-    const mobiusSegments = 100; // Define the number of segments
-
     let vertices = [];
     let indices = [];
     let phi = 0;
@@ -288,7 +293,7 @@ function createMoebiusStrip() {
 function createRings(){
     'use strict';
 
-    let material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0xdeb3e0, side: THREE.DoubleSide});
 
     ring = new THREE.Object3D();
 
@@ -411,7 +416,7 @@ function createRings(){
 function createCentralRing(){
     'use strict';
     
-    let material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+    let material = new THREE.MeshBasicMaterial({ color: 0xdeb3e0, side: THREE.FrontSide});
 
     // Criar a geometria do cilindro
     const geometry = new THREE.CylinderGeometry(fourthRingRadius, fourthRingRadius, centralHeight,1000);
@@ -462,17 +467,17 @@ function handleCollisions(){
 ///////////////////////
 /*  HANDLE MOVEMENT  */
 ///////////////////////
-function handleMovement() {
+function handleMovement(deltaTime) {
     'use strict';
 
     if (keysPressed['1']) {
         let position = rings[0].getWorldPosition(new THREE.Vector3());
-        if(position.y < centralHeight && !ring1Down){
-            rings[0].translateY(ringSpeed);
+        if(position.y < rings[3].getWorldPosition(new THREE.Vector3()).y + centralHeight/2 && !ring1Down){
+            rings[0].translateY(ringSpeed * 30 * deltaTime);
         }
         else{
             ring1Down = true;
-            rings[0].translateY(-ringSpeed);
+            rings[0].translateY(-ringSpeed * 30 * deltaTime);
             if(position.y <= ringHeight){
                 ring1Down = false;
             }
@@ -480,12 +485,12 @@ function handleMovement() {
     }
     if (keysPressed['2']) {
         let position = rings[1].getWorldPosition(new THREE.Vector3());
-        if(position.y < centralHeight && !ring2Down){
-            rings[1].translateY(ringSpeed);
+        if(position.y < rings[3].getWorldPosition(new THREE.Vector3()).y + centralHeight/2 && !ring2Down){
+            rings[1].translateY(ringSpeed * 30 * deltaTime);
         }
         else{
             ring2Down = true;
-            rings[1].translateY(-ringSpeed);
+            rings[1].translateY(-ringSpeed * 30 * deltaTime);
             if(position.y <= ringHeight){
                 ring2Down = false;
             }
@@ -493,12 +498,12 @@ function handleMovement() {
     }
     if (keysPressed['3']) {
         let position = rings[2].getWorldPosition(new THREE.Vector3());
-        if(position.y < centralHeight && !ring3Down){
-            rings[2].translateY(ringSpeed);
+        if(position.y < rings[3].getWorldPosition(new THREE.Vector3()).y + centralHeight/2 && !ring3Down){
+            rings[2].translateY(ringSpeed * 30 * deltaTime);
         }
         else{
             ring3Down = true;
-            rings[2].translateY(-ringSpeed);
+            rings[2].translateY(-ringSpeed * 30 * deltaTime);
             if(position.y <= ringHeight){
                 ring3Down = false;
             }
@@ -525,7 +530,7 @@ function handleMovement() {
                             object.material = new THREE.MeshBasicMaterial({ color: 0x135adc, side: THREE.DoubleSide});
                         }
                         else{
-                            object.material = new THREE.MeshBasicMaterial({ color: 0x00eee0, side: THREE.DoubleSide});
+                            object.material = new THREE.MeshBasicMaterial({ color: 0xdeb3e0, side: THREE.DoubleSide});
                         }
                     }
                 });            
@@ -544,7 +549,7 @@ function handleMovement() {
                         object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
                     }
                     else if(rings.includes(object)){
-                        object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
+                        object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.FrontSide});
                     }
                     else{
                         object.material = new THREE.MeshLambertMaterial({ color: 0x00aaa0, side: THREE.DoubleSide});
@@ -565,7 +570,7 @@ function handleMovement() {
                         object.material = new THREE.MeshPhongMaterial({color: 0x0023ff, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
                     }
                     else if(rings.includes(object)){
-                        object.material = new THREE.MeshPhongMaterial({color: 0x121aed, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
+                        object.material = new THREE.MeshPhongMaterial({color: 0x121aed, shininess: 100, specular: 0x555555, side: THREE.FrontSide})
                     }
                     else{
                         object.material = new THREE.MeshPhongMaterial({color: 0xd443ad, shininess: 100, specular: 0x555555, side: THREE.DoubleSide})
@@ -586,7 +591,7 @@ function handleMovement() {
                         object.material = new THREE.MeshToonMaterial({color: 0xffff00, side: THREE.DoubleSide})
                     }
                     else if(rings.includes(object)){
-                        object.material = new THREE.MeshToonMaterial({color: 0x00fff0, side: THREE.DoubleSide});
+                        object.material = new THREE.MeshToonMaterial({color: 0x00fff0, side: THREE.FrontSide});
                     }
                     else{
                         object.material = new THREE.MeshToonMaterial({color: 0x0da432, side: THREE.DoubleSide});
@@ -609,13 +614,6 @@ function handleMovement() {
 
 }
 
-////////////
-/* UPDATE */
-////////////
-function update(){
-    'use strict';
-
-}
 
 /////////////
 /* DISPLAY */
@@ -630,11 +628,12 @@ function render() {
 ////////////////////////////////
 function init() {
     'use strict';
-
+    
     // Initialize renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.xr.enabled = true;
+    setupRenderer()
+    //renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
     createScene();
@@ -642,7 +641,7 @@ function init() {
     createLights();
     createCameras();
     createControls();
-
+    
     createRings(); // Adiciona os Anéis
     createCentralRing(); // Adiciona o Anel central (cilindro)
     createSkydome(); // Adiciona a skydome
@@ -658,14 +657,25 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+    const deltaTime = delta.getDelta()
+    update(deltaTime)
+    render()    
+}
 
-    renderer.setAnimationLoop(() => {
-        render();
-        handleMovement();
-        if(rings[3]){
-            rings[3].rotateY(ringSpeed / 10);
-        }
-    }); // Atualizado para suportar VR
+function rotateCylinder(deltaTime){
+    rings[3].rotateY(ringSpeed * deltaTime / 5);
+    rings[2].rotateY(ringSpeed * deltaTime / 5);
+    rings[1].rotateY(ringSpeed * deltaTime / 5);
+    rings[0].rotateY(ringSpeed * deltaTime / 5);
+}
+
+////////////
+/* UPDATE */
+////////////
+function update(deltaTime){
+    'use strict';
+    handleMovement(deltaTime)
+    rotateCylinder(deltaTime);
 }
 
 ////////////////////////////
